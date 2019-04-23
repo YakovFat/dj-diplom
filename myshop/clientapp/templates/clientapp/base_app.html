@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% block nav %}
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href={% url "index" %}>Просто магазин</a>
+  <img src={% static "logo.svg" %} alt="" width="42" height="42">
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  {% with url_name=request.resolver_match.url_name %}
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% if url_name == "index" %}active{%endif%}">
+        <a class="nav-link" href={% url "index" %}>
+          Главная</a>
+      </li>
+
+
+      <li class="nav-item dropdown {% if url_name == "smartphones" %}active{%endif%}">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Гаджеты</a>
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+
+          <a class="dropdown-item" href={% url "smartphones" %}>
+            Сматрфоны</a>
+
+        </div>
+      </li>
+
+
+      <li class="nav-item {% if url_name == "empty_section" %}active{%endif%}">
+        <a class="nav-link" href={% url "empty_section" %}>
+          Аксесcуары</a>
+      </li>
+
+
+    </ul>
+    <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
+       href={% url "cart" %}>
+      Корзина</a>
+
+
+    <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
+       href={% url "login" %}>
+      Войти</a>
+  </div>
+  {% endwith %}
+</nav>
+{% endblock %}
