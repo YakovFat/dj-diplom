@@ -6,11 +6,11 @@
   {% endblock %}
   {% block nav %}{% endblock %}
   {% block content %}
-<form class="form-signin">
+<form class="form-signin" method="POST">
   <input type="hidden" name="next" value="">
   <img class="mb-4" src={% static "logo.svg" %} alt="" width="72" height="72">
 
-
+  {% csrf_token %}
   <h1 class="h3 mb-3 font-weight-normal">Вход</h1>
   <label for="inputEmail" class="sr-only">Email</label>
   <input type="email" id="inputEmail" class="form-control" placeholder="Email" name="username"

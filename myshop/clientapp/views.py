@@ -14,7 +14,11 @@ def view_index(request):
     return render(request, 'clientapp/index.html')
 
 def view_login(request):
-    return render(request, 'clientapp/login.html')
+    print(request.POST)
+    return render(
+        request,
+        'clientapp/login.html',
+    )
 
 def view_phone(request):
     return render(request, 'clientapp/phone.html')
