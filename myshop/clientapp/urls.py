@@ -9,5 +9,6 @@ urlpatterns = [
     path('smartphones/', view_smartphones, name='smartphones'),
     path('cart/', view_cart, name='cart'),
     path('login/', view_login, name='login'),
+    path('logout/', view_logout, name='logout'),
     path('smartphones/<str>', view_smartphones, name='smartphones'),
 ]

@@ -1,4 +1,4 @@
-<!DOCTYPE html>{% load static %}
+<!DOCTYPE html>{% load static %} {% load tag_library %}
 <html lang="en" >
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -49,15 +49,22 @@
 
 
     </ul>
-    <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
-       href={% url "cart" %}>
-      Корзина</a>
-
-
-    <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
-       href={% url "login" %}>
-      Войти</a>
-  </div>
+    
+    {% if request.user|to_str == "AnonymousUser" %}
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
+        href={% url "login" %}>
+        Войти</a>
+    </div>
+    {% else %}
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
+        href={% url "cart" %}>
+        Корзина</a>
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "logout" %}active{%endif%}" role="button"
+          href={% url "logout" %}>
+          {{request.user}}
+          Выйти</a>
+    </div>
+    {% endif %}
   {% endwith %}
 </nav>
 {% endblock %}
