@@ -1,18 +1,26 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-
-
-def view_admin(request):
-    return render(request, 'clientapp/admin.html')
+from clientapp.models import Product, Category
 
 def view_cart(request):
     return render(request, 'clientapp/cart.html')
 
+
 def view_empty_section(request):
     return render(request, 'clientapp/empty_section.html')
 
+
 def view_index(request):
-    return render(request, 'clientapp/index.html')
+    category = Category.objects.all()
+    smart = Product.objects.filter(category__name='Смартфоны')
+    print(category)
+    context = {
+        'smart': smart,
+        'category': category,
+    }
+
+    return render(request, 'clientapp/index.html', context)
+
 
 def view_login(request):
     if request.method == 'POST':
@@ -28,12 +36,15 @@ def view_login(request):
             'clientapp/login.html',
         )
 
+
 def view_logout(request):
     logout(request)
     return redirect('index')
 
+
 def view_phone(request):
     return render(request, 'clientapp/phone.html')
+
 
 def view_smartphones(request):
     return render(request, 'clientapp/smartphones.html')

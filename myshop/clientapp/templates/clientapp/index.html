@@ -1,5 +1,76 @@
-{% extends "clientapp/base_app.html" %}
-{% load static %}
+<!DOCTYPE html>{% load static %} {% load tag_library %}
+<html lang="en" >
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Graduation Work</title>
+  <link rel="stylesheet" href={% static "bootstrap.min.css" %}>
+  <link rel="stylesheet" href={% static "main.css" %}>
+  {% block link %}{% endblock %}
+</head>
+
+<body class="" data-gr-c-s-loaded="true">
+{% block nav %}
+
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <a class="navbar-brand" href={% url "index" %}>Просто магазин</a>
+  <img src={% static "logo.svg" %} alt="" width="42" height="42">
+  <button class="navbar-toggler" type="button" data-toggle="collapse"
+          data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+          aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  {% with url_name=request.resolver_match.url_name %}
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% if url_name == "index" %}active{%endif%}">
+        <a class="nav-link" href={% url "index" %}>
+          Главная</a>
+      </li>
+
+
+      <li class="nav-item dropdown {% if url_name == "smartphones" %}active{%endif%}">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Категории</a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdown01">
+          {% for cat in category %}
+          <a class="dropdown-item" href={% url "smartphones" %}>
+            {{cat.name}}</a>
+          {% endfor %}
+        </div>
+
+      </li>
+
+
+      <li class="nav-item {% if url_name == "empty_section" %}active{%endif%}">
+        <a class="nav-link" href={% url "empty_section" %}>
+          Аксесcуары</a>
+      </li>
+
+
+    </ul>
+    
+    {% if request.user|to_str == "AnonymousUser" %}
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
+        href={% url "login" %}>
+        Войти</a>
+    </div>
+    {% else %}
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
+        href={% url "cart" %}>
+        Корзина</a>
+      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "logout" %}active{%endif%}" role="button"
+          href={% url "logout" %}>
+          {{request.user}}
+          Выйти</a>
+    </div>
+    {% endif %}
+  {% endwith %}
+</nav>
+{% endblock %}
 {% block content %}
 
 <main role="main">
@@ -16,12 +87,13 @@
     <!-- Example row of columns -->
     <div class="row">
 
+      {% for s in smart %}
       <div class="col-md-4">
-        <h2>Nexus 5x</h2>
+        <h2>{{s.title}}</h2>
 
         <a href="./phone.html">
 
-          <img src="./static/nexus5x.webp" width="180">
+          <img src={{s.image.url}} width="180">
 
         </a>
 
@@ -29,34 +101,7 @@
           <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
         </form>
       </div>
-
-      <div class="col-md-4">
-        <h2>iPhone 7</h2>
-
-        <a href="./phone.html">
-
-          <img src="./static/iphone7.webp" width="180">
-
-        </a>
-
-        <form>
-          <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
-        </form>
-      </div>
-
-      <div class="col-md-4">
-        <h2>Pixel 2</h2>
-
-        <a href="./phone.html">
-
-          <img src="./static/pixel2.webp" width="180">
-
-        </a>
-
-        <form>
-          <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
-        </form>
-      </div>
+      {% endfor %}
 
     </div>
   </div> <!-- /container -->
@@ -97,3 +142,8 @@
   <p>© Просто магазин 2018</p>
 </footer>
 {% endblock %}
+<script src={% static "jquery-3.3.1.slim.min.js" %}></script>
+<script src={% static "popper.min.js" %}></script>
+<script src={% static "bootstrap.min.js" %}></script>
+</body>
+</html>
