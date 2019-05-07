@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+from django.urls import reverse
 
 
 class MyUserManager(BaseUserManager):
@@ -76,6 +77,9 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'slug': self.slug})
+
 
 def image_folder(instance, filename):
     filename = instance.slug + '.' + filename.split('.')[1]
@@ -89,6 +93,60 @@ class Product(models.Model):
     description = models.TextField()
     image = models.ImageField(upload_to=image_folder)
     price = models.DecimalField(max_digits=9, decimal_places=2)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('product', kwargs={'slug': self.slug})
+
+
+class CartItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField(default=1)
+    item_total = models.DecimalField(max_digits=9, decimal_places=2,
+                                     default=0.00)
+
+    def __str__(self):
+        return 'Cart item for product {0}'.format(self.product.title)
+
+    def change_number_product(self, qty):
+        self.qty = qty
+        self.save()
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    items = models.ManyToManyField(CartItem, blank=True)
+    cart_total = models.DecimalField(max_digits=9, decimal_places=2,
+                                     default=0.00)
+
+    def __str__(self):
+        return "Корзина {}".format(self.user)
+
+    def add_to_cart(self, slug):
+        product = Product.objects.get(slug=slug)
+        new_item = CartItem.objects.get_or_create(product=product,
+                                                  item_total=product.price)
+        if new_item not in self.items.all():
+            self.items.add(new_item[0])
+            self.save()
+
+    def remove_from_cart(self, slug):
+        product = Product.objects.get(slug=slug)
+        for cart_item in self.items.all():
+            if cart_item.product == product:
+                self.items.remove(cart_item)
+                cart_item.qty = 1
+                cart_item.save()
+                self.save()
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=120)
+    description = models.CharField(max_length=500)
+    product = models.ManyToManyField(Product, blank=True)
+    date_creation = models.DateTimeField()
 
     def __str__(self):
         return self.title

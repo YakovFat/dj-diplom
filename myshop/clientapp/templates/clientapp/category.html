@@ -1,0 +1,54 @@
+{% extends "clientapp/index.html" %}
+{% load static %}
+{% block content %}
+
+<main role="main">
+	<div class="container">
+		<!-- Example row of columns -->
+		<h1>{{name_category}}</h1>
+		<div class="row">
+			{% for p in product %}
+			<div class="col-md-4">
+				<h2>{{p.title}}</h2>
+				<a href={{p.get_absolute_url}}>
+					<img src={{p.image.url}} width="180">
+				</a>
+				{% if user.is_authenticated %}
+				<form action="{% url 'add_to_cart' p.slug %}" method="post">
+					{% csrf_token %}
+					<input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
+				</form>
+				{% else %}
+				<a class="btn btn-secondary {% if url_name == "login" %}active{%endif%}" role="button"
+				href={% url "login" %}>
+			Добавить в корзину »</a>
+			{% endif %}
+		</div>
+		{% endfor %}
+	</div> <!-- /container -->
+</div>
+</main>
+<div class="pagination">
+    <span class="step-links">
+        {% if product.has_previous %}
+            <a href="?page=1">&laquo; первая</a>
+            <a href="?page={{ product.previous_page_number }}">предыдущая</a>
+        {% endif %}
+        {% for page in product.paginator.page_range %}
+        {{page}}
+        {% endfor %}
+        <span class="current">
+            {{ product.number }} из {{ product.paginator.num_pages }}.
+        </span>
+
+        {% if product.has_next %}
+            <a href="?page={{ product.next_page_number }}">следующая>
+            <a href="?page={{ product.paginator.num_pages }}">последняя &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+<hr>
+<footer class="container">
+	<p>© Просто магазин 2018</p>
+</footer>
+{% endblock %}

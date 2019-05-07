@@ -1,4 +1,4 @@
-<!DOCTYPE html>{% load static %} {% load tag_library %}
+<!DOCTYPE html>{% load static %}
 <html lang="en" >
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -9,16 +9,14 @@
   <link rel="stylesheet" href={% static "main.css" %}>
   {% block link %}{% endblock %}
 </head>
-
 <body class="" data-gr-c-s-loaded="true">
-{% block nav %}
-
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-  <a class="navbar-brand" href={% url "index" %}>Просто магазин</a>
-  <img src={% static "logo.svg" %} alt="" width="42" height="42">
-  <button class="navbar-toggler" type="button" data-toggle="collapse"
-          data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
-          aria-expanded="false" aria-label="Toggle navigation">
+  {% block nav %}
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href={% url "index" %}>Просто магазин</a>
+    <img src={% static "logo.svg" %} alt="" width="42" height="42">
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+    data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault"
+    aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   {% with url_name=request.resolver_match.url_name %}
@@ -26,117 +24,76 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item {% if url_name == "index" %}active{%endif%}">
         <a class="nav-link" href={% url "index" %}>
-          Главная</a>
+        Главная</a>
       </li>
-
-
-      <li class="nav-item dropdown {% if url_name == "smartphones" %}active{%endif%}">
+      <li class="nav-item dropdown {% if url_name == "category" %}active{%endif%}">
         <a class="nav-link dropdown-toggle" href="#" id="dropdown01"
-           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Категории</a>
-
-        <div class="dropdown-menu" aria-labelledby="dropdown01">
-          {% for cat in category %}
-          <a class="dropdown-item" href={% url "smartphones" %}>
-            {{cat.name}}</a>
-          {% endfor %}
-        </div>
-
-      </li>
-
-
-      <li class="nav-item {% if url_name == "empty_section" %}active{%endif%}">
-        <a class="nav-link" href={% url "empty_section" %}>
-          Аксесcуары</a>
-      </li>
-
-
-    </ul>
-    
-    {% if request.user|to_str == "AnonymousUser" %}
-      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
-        href={% url "login" %}>
-        Войти</a>
-    </div>
-    {% else %}
-      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
-        href={% url "cart" %}>
-        Корзина</a>
-      <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "logout" %}active{%endif%}" role="button"
-          href={% url "logout" %}>
-          {{request.user}}
-          Выйти</a>
-    </div>
-    {% endif %}
-  {% endwith %}
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Категории</a>
+      <div class="dropdown-menu" aria-labelledby="dropdown01">
+        {% for cat in category %}
+        <a class="dropdown-item" href={{cat.get_absolute_url}}>
+        {{cat.name}}</a>
+        {% endfor %}
+      </div>
+    </li>
+    <li class="nav-item {% if url_name == "empty_section" %}active{%endif%}">
+      <a class="nav-link" href={% url "empty_section" %}>
+      Аксесcуары</a>
+    </li>
+  </ul>
+  {% if not user.is_authenticated %}
+  <a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "login" %}active{%endif%}" role="button"
+  href={% url "login" %}>
+Войти</a>
+</div>
+{% else %}
+<a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "cart" %}active{%endif%}" role="button"
+href={% url "cart" %}>
+Корзина <span class="badge">{{cart.items.count}}</span> </a>
+<a class="btn btn-outline-success my-2 my-sm-0 {% if url_name == "logout" %}active{%endif%}" role="button"
+href={% url "logout" %}>
+{{request.user}}
+Выйти</a>
+</div>
+{% endif %}
+{% endwith %}
 </nav>
 {% endblock %}
 {% block content %}
-
 <main role="main">
-
+  {% for art in article %}
   <div class="jumbotron">
     <div class="container">
-      <h1 class="display-4">Добро пожаловать на сайт просто магазина</h1>
-      <p>Лучшие мобилы только у нас:</p>
+      <h1 class="display-4">{{art.title}}</h1>
+      <p>{{art.description}}</p>
     </div>
   </div>
-
-
   <div class="container mb-5">
     <!-- Example row of columns -->
     <div class="row">
-
-      {% for s in smart %}
+      {% for s in art.product.all %}
       <div class="col-md-4">
         <h2>{{s.title}}</h2>
-
-        <a href="./phone.html">
-
+        <a href={{s.get_absolute_url}}>
           <img src={{s.image.url}} width="180">
-
         </a>
-
-        <form>
+        {% if user.is_authenticated %}
+        <form action="{% url 'add_to_cart' s.slug %}" method="post">
+          {% csrf_token %}
           <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
         </form>
-      </div>
-      {% endfor %}
-
+        {% else %}
+        <a class="btn btn-secondary {% if url_name == "login" %}active{%endif%}" role="button"
+        href={% url "login" %}>
+      Добавить в корзину »</a>
+      {% endif %}
     </div>
-  </div> <!-- /container -->
-
-  <div class="jumbotron">
-    <div class="container">
-      <h1 class="display-4">Не знаете что одеть летом?</h1>
-      <p>Вот что мы можем предложить:</p>
-    </div>
+    {% endfor %}
   </div>
-
-
-  <div class="container mb-5">
-    <!-- Example row of columns -->
-    <div class="row">
-
-      <div class="col-md-4">
-        <h2>Фуфайка</h2>
-
-        <a href="./phone.html">
-
-          <img src="./static/fufajka.jpg" width="180">
-
-        </a>
-
-        <form>
-          <input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
-        </form>
-      </div>
-
-    </div>
-  </div> <!-- /container -->
-
+</div> <!-- /container -->
+{% endfor %}
 </main>
-
 <hr>
 <footer class="container">
   <p>© Просто магазин 2018</p>
