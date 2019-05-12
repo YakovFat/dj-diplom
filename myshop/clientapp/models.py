@@ -111,6 +111,7 @@ class CartItem(models.Model):
         return 'Cart item for product {0}'.format(self.product.title)
 
     def change_number_product(self, qty):
+        self.item_total = (self.item_total/int(self.qty))*int(qty)
         self.qty = qty
         self.save()
 
@@ -150,3 +151,33 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Order(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    items = models.TextField()
+    count = models.IntegerField(default=0)
+    order_total = models.DecimalField(max_digits=9, decimal_places=2,
+                                     default=0.00)
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "Заказ №{}".format(str(self.id))
+
+    def order_registration(self, cart, user):
+        self.user = user
+        order_list = [str(i.product.title) + ' - ' + str(i.qty) + 'шт.' + '\n' for
+                      i in cart.items.all()]
+        order_str = ''.join(order_list)
+        self.items = order_str
+        for item in cart.items.all():
+            self.count += item.qty
+            self.order_total += float(item.item_total)
+            item.delete()
+        self.save()
+        cart.delete()
+
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = 'Заказы'
+        ordering = ('date_creation',)

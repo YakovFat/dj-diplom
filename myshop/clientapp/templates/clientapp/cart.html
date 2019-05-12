@@ -4,9 +4,9 @@
 
 <div class="container mt-3">
 	<div class="row">
-		<div class="col-lg-6 col-md-9 col-sm-12 order-md-2 mb-4">
+		<div class="col-lg-8 col-md-9 col-sm-12 order-md-2 mb-4">
 			<h4 class="d-flex justify-content-between align-items-center mb-3">
-				<span class="text-muted">Ваша корзина</span>
+				<span class="text-muted">Ваша корзина, {{request.user}}</span>
 				<span class="badge badge-secondary badge-pill">{{cart.items.count}}</span>
 			</h4>
 			<ul class="list-group mb-3">
@@ -16,17 +16,20 @@
 						<h6 class="my-0">{{item.product.title}}</h6>
 						<small class="text-muted">{{item.product.description}}</small>
 					</div>
-					<form action="{% url 'change_number_product' item.product.slug %}" method="post">
-						{% csrf_token %}
-						<input type="number" class="cart-item-qty" data-id="{{item.id}}" name="qty" value="{{item.qty}}" min="1" width="">
-						<input type="submit" value="ok">
-					</form>
+						<form action="{% url 'change_number_product' item.product.slug %}" method="post">
+							{% csrf_token %}
+							<input type="number" class="cart-item-qty" data-id="{{item.id}}" name="qty" value="{{item.qty}}" min="1">
+							<input type="submit" value="ok">
+						</form>
+					<div>
+						<h6 class="my-0">{{item.item_total}} рублей</h6>
+					</div>
 					<a href="{% url 'remove_from_cart' slug=item.product.slug %}"><button class="btn btn-default">Удалить</button></a>
 				</li>
 				{% endfor %}
 			</ul>
 			<form class="card p-2">
-				<button type="submit" class="btn btn-secondary">Заказать</button>
+				<a class="btn btn-secondary" href="{% url 'order_registration' %}" >Заказать</a>
 			</form>
 		</div>
 	</div>

@@ -10,7 +10,7 @@
 				<img src={{product.image.url}} width="120">
 				<p>{{product.description}}</p>
 				{% if user.is_authenticated %}
-				<form action="{% url 'add_to_cart' product.slug %}" method="post">
+				<form action="{% url 'add_to_cart' product.slug %}" method="get">
 					{% csrf_token %}
 					<input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
 				</form>

@@ -14,7 +14,7 @@
 					<img src={{p.image.url}} width="180">
 				</a>
 				{% if user.is_authenticated %}
-				<form action="{% url 'add_to_cart' p.slug %}" method="post">
+				<form action="{% url 'add_to_cart' p.slug %}" method="get">
 					{% csrf_token %}
 					<input type="submit" class="btn btn-secondary" value="Добавить в корзину »">
 				</form>
@@ -34,9 +34,6 @@
             <a href="?page=1">&laquo; первая</a>
             <a href="?page={{ product.previous_page_number }}">предыдущая</a>
         {% endif %}
-        {% for page in product.paginator.page_range %}
-        {{page}}
-        {% endfor %}
         <span class="current">
             {{ product.number }} из {{ product.paginator.num_pages }}.
         </span>
