@@ -181,3 +181,17 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
         ordering = ('date_creation',)
+
+
+class AnonymousReviews(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=120)
+    description = models.CharField(max_length=500)
+    mark = models.PositiveIntegerField()
+
+    def __str__(self):
+        return 'Анонимный отзыв №{}'.format(self.id)
+
+    class Meta:
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'

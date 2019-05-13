@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from clientapp.forms import UserChangeForm, UserCreationForm
 
 from clientapp.models import (MyUser, Category, Product, CartItem, \
-                              Cart, Article, Order)
+                              Cart, Article, Order, AnonymousReviews)
 
 
 class UserAdmin(BaseUserAdmin):
@@ -46,6 +46,7 @@ admin.site.register(CartItem)
 admin.site.register(Cart)
 admin.site.register(Article)
 admin.site.register(Order, OrderAdmin)
+admin.site.register(AnonymousReviews)
 # ... and, since we're not using Django's built-in permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)

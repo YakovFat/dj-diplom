@@ -17,7 +17,8 @@ urlpatterns = [
     path('change_number_product/<slug:slug>', ChangeNumberProductView.as_view(),
          name='change_number_product'),
     path('order_registration/', OrderRegistrariomView.as_view(), name='order_registration'),
-    path('registration/', RegisterView.as_view(), name='registration'),
+    path('registration/', RegisterFormView.as_view(), name='registration'),
+    path('anonymous_reviews/<slug:slug>', AnonymousReviewsView.as_view(), name='anonymous_reviews'),
 ]
 
 if settings.DEBUG:

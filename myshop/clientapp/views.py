@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from clientapp.models import Product, Category, Cart, Order, CartItem
+from clientapp.models import Product, Category, Cart, Order, CartItem, AnonymousReviews
 from django.views import View
 from clientapp.mixins import UniversalMixin, CommandMixin
 from django.contrib.auth.views import LoginView
@@ -90,31 +90,36 @@ class MyLoginView(LoginView):
     template_name = 'clientapp/login.html'
 
 
-class RegisterView(View):
-    def get(self, request):
-        return render(request, 'clientapp/registration.html')
-    def post(self, request):
-        if request.method == 'POST':
-            username = request.POST['username']
-            password1 = request.POST['password']
-            password2 = request.POST['password']
-            print(username)
-        return render(request, 'clientapp/registration.html')
-    # form_class = UserCreationForm
-    #
-    # # Ссылка, на которую будет перенаправляться пользователь в случае успешной регистрации.
-    # # В данном случае указана ссылка на страницу входа для зарегистрированных пользователей.
-    # success_url = "/login/"
-    #
-    # # Шаблон, который будет использоваться при отображении представления.
-    # template_name = "clientapp/registration.html"
-    #
-    # def form_valid(self, form):
-    #     # Создаём пользователя, если данные в форму были введены корректно.
-    #     form.save()
-    #
-    #     # Вызываем метод базового класса
-    #     return super(RegisterFormView, self).form_valid(form)
+
+class RegisterFormView(FormView):
+
+    form_class = UserCreationForm
+
+    # Ссылка, на которую будет перенаправляться пользователь в случае успешной регистрации.
+    # В данном случае указана ссылка на страницу входа для зарегистрированных пользователей.
+    success_url = "/login/"
+
+    # Шаблон, который будет использоваться при отображении представления.
+    template_name = "clientapp/registration.html"
+
+    def form_valid(self, form):
+        # Создаём пользователя, если данные в форму были введены корректно.
+        form.save()
+
+        # Вызываем метод базового класса
+        return super(RegisterFormView, self).form_valid(form)
+
+
+class AnonymousReviewsView(View):
+    def post(self, request, slug):
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        mark = request.POST.get('mark')
+        reviews = AnonymousReviews(name=name, product=Product.objects.get(slug=slug), description=description, mark=int(mark))
+        reviews.save()
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 
 # def view_logout(request):
 #     logout(request)
@@ -240,3 +245,16 @@ class RegisterView(View):
 #     qty = request.POST.get('qty')
 #     cart_item.change_number_product(qty)
 #     return redirect('cart')
+
+
+
+# class RegisterView(View):
+    # def get(self, request):
+    #     return render(request, 'clientapp/registration.html')
+    # def post(self, request):
+    #     if request.method == 'POST':
+    #         username = request.POST['username']
+    #         password1 = request.POST['password1']
+    #         password2 = request.POST['password2']
+    #         print(username, password1, password2)
+    #     return render(request, 'clientapp/registration.html')
