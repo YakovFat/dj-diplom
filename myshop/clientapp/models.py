@@ -16,6 +16,7 @@ class MyUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
+
         )
 
         user.set_password(password)
@@ -94,6 +95,8 @@ class Product(models.Model):
     image = models.ImageField(upload_to=image_folder)
     price = models.DecimalField(max_digits=9, decimal_places=2)
 
+
+
     def __str__(self):
         return self.title
 
@@ -143,16 +146,6 @@ class Cart(models.Model):
                 self.save()
 
 
-class Article(models.Model):
-    title = models.CharField(max_length=120)
-    description = models.CharField(max_length=500)
-    product = models.ManyToManyField(Product, blank=True)
-    date_creation = models.DateTimeField()
-
-    def __str__(self):
-        return self.title
-
-
 class Order(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     items = models.TextField()
@@ -173,7 +166,6 @@ class Order(models.Model):
         for item in cart.items.all():
             self.count += item.qty
             self.order_total += float(item.item_total)
-            item.delete()
         self.save()
         cart.delete()
 
@@ -183,11 +175,22 @@ class Order(models.Model):
         ordering = ('date_creation',)
 
 
-class AnonymousReviews(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    name = models.CharField(max_length=120)
+class Article(models.Model):
+    title = models.CharField(max_length=120)
     description = models.CharField(max_length=500)
+    product = models.ManyToManyField(Product, blank=True)
+    date_creation = models.DateTimeField()
+
+    def __str__(self):
+        return self.title
+
+
+class AnonymousReviews(models.Model):
+    name = models.CharField(max_length=120)
+    description = models.CharField(max_length=500, blank=True)
     mark = models.PositiveIntegerField()
+    product = models.ForeignKey(Product, blank=True,
+                                          on_delete=models.CASCADE)
 
     def __str__(self):
         return 'Анонимный отзыв №{}'.format(self.id)

@@ -1,6 +1,6 @@
 from django.http import HttpResponseRedirect
 
-from clientapp.models import Cart, Product, Category, Article
+from clientapp.models import Cart, Product, Category, Article, AnonymousReviews
 from django.shortcuts import get_object_or_404, render
 
 
@@ -27,6 +27,9 @@ class UniversalMixin(object):
 
     def get_article(self):
         return Article.objects.order_by('-date_creation')
+
+    def anonymous_reviews(self, product):
+        return AnonymousReviews.objects.filter(product=product)
 
     def get_context(self):
         context = {

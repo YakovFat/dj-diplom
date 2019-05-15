@@ -39,9 +39,12 @@ class EmptySectionView(UniversalMixin, View):
 class ProductView(UniversalMixin, View):
     def get(self, request, slug, *args, **kwargs):
         data_mixin = super(ProductView, self)
+
         context = data_mixin.get_context()
         product = data_mixin.get_product_slug(slug)
+        anonymous_reviews = data_mixin.anonymous_reviews(product)
         context['product'] = product
+        context['anonymous_reviews'] = anonymous_reviews
         return render(request, 'clientapp/product.html', context)
 
 
@@ -115,9 +118,12 @@ class AnonymousReviewsView(View):
         name = request.POST.get('name')
         description = request.POST.get('description')
         mark = request.POST.get('mark')
-        reviews = AnonymousReviews(name=name, product=Product.objects.get(slug=slug), description=description, mark=int(mark))
-        reviews.save()
+        if len(name) != 0 and str(mark) != 'NoneType':
+            reviews = AnonymousReviews(name=name, product=Product.objects.get(slug=slug), description=description, mark=int(mark))
+            reviews.save()
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 
 
 

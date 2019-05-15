@@ -1,5 +1,6 @@
 {% extends "clientapp/index.html" %}
 {% load static %}
+{% load number_to_asterisks %}
 {% block content %}
 <main role="main">
 	<div class="container mt-3">
@@ -22,10 +23,11 @@
 		</div>
 	</div>
 	<hr>
-	★★★★★ <span>Вася</span>
-	<p> Хороший отзыв</p>
-	★★ <span>Петя</span>
-	<p> Плохой отзыв</p>
+		{% for review in anonymous_reviews %}
+		<span>{{review.name}}</span>
+		<p>{{review.mark|number_to_asterisks}}</p>
+		<p> {{review.description}}</p>
+		{% endfor %}
 	<hr>
 	<div class="row">
 		<div class="col-lg-6 col-md-8 col-sm-12">

@@ -37,11 +37,18 @@ class UserAdmin(BaseUserAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('user', 'count', 'date_creation')
 
+class AnonymousReviewsInline(admin.TabularInline):
+    model = AnonymousReviews
+
+class ProductAdmin(admin.ModelAdmin):
+    inlines = [AnonymousReviewsInline]
+
+
 
 # Now register the new UserAdmin...
 admin.site.register(MyUser, UserAdmin)
 admin.site.register(Category)
-admin.site.register(Product)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(CartItem)
 admin.site.register(Cart)
 admin.site.register(Article)
