@@ -1,10 +1,10 @@
 from django.http import HttpResponseRedirect
 
 from clientapp.models import Cart, Product, Category, Article, AnonymousReviews
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 
 
-class UniversalMixin(object):
+class UniversalMixin:
 
     def get_cart(self, *args, **kwargs):
         cart = None

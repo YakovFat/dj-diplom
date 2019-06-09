@@ -1,7 +1,7 @@
 {% extends "clientapp/index.html" %}
 {% load static %}
 {% block content %}
-
+{% load custom_filters %}
 <div class="container mt-3">
 	<div class="row">
 		<div class="col-lg-8 col-md-9 col-sm-12 order-md-2 mb-4">
@@ -22,7 +22,7 @@
 							<input type="submit" value="ok">
 						</form>
 					<div>
-						<h6 class="my-0">{{item.item_total}} рублей</h6>
+						<h6 class="my-0">{{item.product.price|price_qty:item.qty}} рублей</h6>
 					</div>
 					<a href="{% url 'remove_from_cart' slug=item.product.slug %}"><button class="btn btn-default">Удалить</button></a>
 				</li>

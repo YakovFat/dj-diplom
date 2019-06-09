@@ -107,14 +107,11 @@ class Product(models.Model):
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty = models.PositiveIntegerField(default=1)
-    item_total = models.DecimalField(max_digits=9, decimal_places=2,
-                                     default=0.00)
 
     def __str__(self):
         return 'Cart item for product {0}'.format(self.product.title)
 
     def change_number_product(self, qty):
-        self.item_total = (self.item_total/int(self.qty))*int(qty)
         self.qty = qty
         self.save()
 
@@ -122,16 +119,13 @@ class CartItem(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem, blank=True)
-    cart_total = models.DecimalField(max_digits=9, decimal_places=2,
-                                     default=0.00)
 
     def __str__(self):
         return "Корзина {}".format(self.user)
 
     def add_to_cart(self, slug):
         product = Product.objects.get(slug=slug)
-        new_item = CartItem.objects.get_or_create(product=product,
-                                                  item_total=product.price)
+        new_item = CartItem.objects.get_or_create(product=product)
         if new_item not in self.items.all():
             self.items.add(new_item[0])
             self.save()
@@ -148,7 +142,7 @@ class Cart(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    items = models.TextField()
+    items = models.ManyToManyField(Product, blank=True)
     count = models.IntegerField(default=0)
     order_total = models.DecimalField(max_digits=9, decimal_places=2,
                                      default=0.00)
@@ -159,13 +153,14 @@ class Order(models.Model):
 
     def order_registration(self, cart, user):
         self.user = user
-        order_list = [str(i.product.title) + ' - ' + str(i.qty) + 'шт.' + '\n' for
-                      i in cart.items.all()]
-        order_str = ''.join(order_list)
-        self.items = order_str
         for item in cart.items.all():
             self.count += item.qty
-            self.order_total += float(item.item_total)
+            item.qty = 1
+            item.save()
+            self.order_total += float(item.product.price)*item.qty
+        self.save()
+        for item in cart.items.all():
+            self.items.add(item.product)
         self.save()
         cart.delete()
 
