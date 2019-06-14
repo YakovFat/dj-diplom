@@ -49,7 +49,7 @@ pip install -r requirements.txt
 ```
 Загрузить миграции:
 ```bash
-python manage.py makemigrations
+python manage.py migrate
 ```
 Загрузить тестовые данные:
 
